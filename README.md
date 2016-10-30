@@ -31,6 +31,11 @@ Futhermore by using it, you prevent attacker to try other system ports like SSH,
 
 WIP - coming soon :)
 
+## Installation
+[Packagist](https://packagist.org/packages/cyberdean/botdetect-bundle)
+
+Simply run : `composer require cyberdean/botdetect-bundle`
+
 ## Configuration
 config.yml - Default values
 ``` yml
