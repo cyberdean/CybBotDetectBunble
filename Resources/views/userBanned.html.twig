@@ -1,0 +1,37 @@
+{% spaceless %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Your ip is banned</title>
+        <style>
+            html, body {
+                height: 100%;
+            }
+            html, body {
+                font-family: Arial, sans-serif;
+
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            .center {
+                text-align: center;
+                margin-bottom: 30%;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="center">
+            <h1>Your ip address ({{ ip }}) is banned</h1>
+            Evil users/bot are not welcome here
+
+            <p>If you use a VPN or Proxy, change or disable it to access this website.</p>
+            <hr/>
+            <h1>Votre adresse IP ({{ ip }}) à été bannie</h1>
+            Les utilisateurs / robots malveillants ne sont pas les bienvenus ici
+
+            <p>Si vous utilisez un VPN ou un Proxy, changez ou désactivez-le pour accéder au site.</p>
+        </div>
+    </body>
+</html>
+{% endspaceless %}
