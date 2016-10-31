@@ -24,6 +24,8 @@ class Configuration implements ConfigurationInterface
         // configure your bundle. See the documentation linked above for
         // more information on that topic.
 
+        //todo add configuation option for : strike UA or simply send 403 (no strike/ban) --> add field type ?
+
         $rootNode->addDefaultsIfNotSet()->children()
             ->scalarNode('min_ban_interval')->defaultValue('P3D')->info('Minimum PHP DateInterval ban time')->end()
             ->scalarNode('max_ban_interval')->defaultValue('P6M')->info('Maximum PHP DateInterval ban time')->end()

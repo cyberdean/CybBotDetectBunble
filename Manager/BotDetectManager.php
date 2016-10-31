@@ -35,10 +35,28 @@ class BotDetectManager {
         $this->router = $router;
     }
 
+    /**
+     * Determine if bot or not
+     * @param $userAgent string UserAgent to test
+     * @return false|\Cyberdean\Security\BotDetectBundle\Entity\Security\BadUserAgent
+     */
     public function isBot($userAgent) {
-        //todo use regex ??
         $badUserAgentRepo = $this->em->getRepository('CybBotDetectBundle:Security\BadUserAgent');
-        return $badUserAgentRepo->findOneBy(array('ua' => $userAgent)) != null;
+        foreach ($badUserAgentRepo->findAll() as $badUApattern) {
+            $delimiter = '@';
+            if (strpos($badUApattern, $delimiter) > -1) {
+                $delimiter = '#';
+            }
+
+            $res = preg_match($delimiter . $badUApattern . $delimiter . 'i', $userAgent);
+            if ($res === FALSE) {
+                $this->logger->error('Fail to try match regex : ' . var_export($badUApattern, true));
+            }
+            else if ($res == 1) {
+                return $badUApattern;
+            }
+        }
+        return false;
     }
 
     /**
@@ -82,12 +100,13 @@ class BotDetectManager {
         if ($this->check($ip)) return;  //todo use array  clientIps
 
         $ua = $request->headers->get('User-Agent');
-        if ($this->isBot($ua)) {
+        $res = $this->isBot($ua);
+        if ($res) {
             $sk = new Strike();
             $sk->setIp($ip)
                 ->setDate(new \DateTime())
                 ->setReason(ReasonEnum::UA)
-                ->setReasonDetails($ua);
+                ->setReasonDetails(json_encode(array('original' => $ua, 'match' => $res->getUa())));
             $this->em->persist($sk);
             $this->em->flush();
         }

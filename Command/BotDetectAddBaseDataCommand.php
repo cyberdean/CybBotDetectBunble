@@ -34,12 +34,18 @@ class BotDetectAddBaseDataCommand extends ContainerAwareCommand
         }
         $em->flush();
 
-        $uaArray = $this->readFile('@CybBotDetectBundle/Resources/dictionnary/ua.json');
-        foreach ($uaArray as $u) {
-            $ua = new BadUserAgent();
-            $ua->setUa($u);
-            $em->persist($ua);
+        $strictMode = true;//todo option  //Add also web copiers, ...
+        $uaCatArray = $this->readFile('@CybBotDetectBundle/Resources/dictionnary/ua.json');
+        foreach ($uaCatArray as $cat) {
+            if ($strictMode || !$strictMode && !$cat['acceptable']) {
+                foreach ($cat['list'] as $u) {
+                    $ua = new BadUserAgent();
+                    $ua->setUa($u);
+                    $em->persist($ua);
+                }
+            }
         }
+
         $em->flush();
         $output->writeln('Command Done.');
     }
