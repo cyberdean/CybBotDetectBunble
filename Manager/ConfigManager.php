@@ -40,6 +40,7 @@ class ConfigManager
     }
 
     /**
+     * Get if filter for HTTP 4xx (404 excluded) is enabled
      * @return boolean
      */
     public function isErr4xxCheck()
@@ -48,6 +49,7 @@ class ConfigManager
     }
 
     /**
+     * Get if filter for User-Agent is enabled
      * @return boolean
      */
     public function isUaCheck()
@@ -56,6 +58,7 @@ class ConfigManager
     }
 
     /**
+     * Get maximum ban duration
      * @return string
      */
     public function getMaxBanInterval()
@@ -64,6 +67,7 @@ class ConfigManager
     }
 
     /**
+     * Get first ban duration
      * @return string
      */
     public function getMinBanInterval()
@@ -72,6 +76,7 @@ class ConfigManager
     }
 
     /**
+     * Get if filter for HTTP 404 is enabled
      * @return boolean
      */
     public function isErr404Check()
@@ -80,6 +85,7 @@ class ConfigManager
     }
 
     /**
+     * Get HTTP response code when ip is banned
      * @return int
      */
     public function getBannedResponseCode()

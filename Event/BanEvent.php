@@ -3,32 +3,30 @@
 namespace Cyberdean\Security\BotDetectBundle\Event;
 
 
+use Cyberdean\Security\BotDetectBundle\Entity\Security\Ban;
 use Symfony\Component\EventDispatcher\Event;
 
 class BanEvent extends Event
 {
     const NAME = 'cyb.botdetect.security.ban';
 
-    /* @var $ip string */
-    protected $ip;
+    /* @var $ban Ban */
+    protected $ban;
 
     /**
      * BanEvent constructor.
-     * @param $ip string
+     * @param $ban Ban
      */
-    public function __construct($ip)
+    public function __construct(Ban $ban)
     {
-        $this->ip = $ip;
+        $this->ban = $ban;
     }
 
     /**
-     * @return mixed
+     * @return Ban
      */
-    public function getIp()
+    public function getBan()
     {
-        return $this->ip;
+        return $this->ban;
     }
-
-
-
 }

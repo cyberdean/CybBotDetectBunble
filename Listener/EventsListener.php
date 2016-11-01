@@ -27,7 +27,7 @@ class EventsListener
             $this->eventDispatcher->dispatch(StrikeEvent::NAME, new StrikeEvent($entity));
         }
         else if($entity instanceof Ban) {
-            $this->eventDispatcher->dispatch(BanEvent::NAME, new BanEvent($entity->getIp()));
+            $this->eventDispatcher->dispatch(BanEvent::NAME, new BanEvent($entity));
         }
         else {
             $this->logger->error('[CybBotDetectBundle] Fail to dispatch unknown entity type event : ' . var_export($entity, true));

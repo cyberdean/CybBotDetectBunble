@@ -20,10 +20,6 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('cyb_bot_detect');
 
-        // Here you should define the parameters that are allowed to
-        // configure your bundle. See the documentation linked above for
-        // more information on that topic.
-
         //todo add configuation option for : strike UA or simply send 403 (no strike/ban) --> add field type ?
 
         $rootNode->addDefaultsIfNotSet()->children()

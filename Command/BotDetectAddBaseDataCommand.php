@@ -6,8 +6,12 @@ use Cyberdean\Security\BotDetectBundle\Entity\Security\BadUrl;
 use Cyberdean\Security\BotDetectBundle\Entity\Security\BadUserAgent;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Command used to import base data, to detect evil users/bots
+ */
 class BotDetectAddBaseDataCommand extends ContainerAwareCommand
 {
     protected function configure()
@@ -15,15 +19,12 @@ class BotDetectAddBaseDataCommand extends ContainerAwareCommand
         $this
             ->setName('bot-detect:import-basedata')
             ->setDescription('Import into database, set of Suspect/Evil URL & UserAgent')
-            //->addOption('option', null, InputOption::VALUE_NONE, 'Option description')
+            ->addOption('onlyEvil', null, InputOption::VALUE_NONE, 'Import only evil user-agent (not webcopier, ...)')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        //if ($input->getOption('option')) {
-        //}
-
         $em = $this->getContainer()->get('doctrine.orm.entity_manager');
         $badUrlRepo = $em->getRepository('CybBotDetectBundle:Security\BadUrl');
         $badUARepo = $em->getRepository('CybBotDetectBundle:Security\BadUserAgent');
@@ -41,7 +42,7 @@ class BotDetectAddBaseDataCommand extends ContainerAwareCommand
         $em->flush();
         $output->writeln('Imported ' . $cptUrl . ' urls (' . (sizeof($urlArray) - $cptUrl) . ' skipped)');
 
-        $strictMode = true;//todo option  //Add also web copiers, ...
+        $strictMode = !$input->getOption('onlyEvil');
         $uaCatArray = $this->readFile('@CybBotDetectBundle/Resources/dictionnary/ua.json');
         $cptUa = 0;
         $cptUaSkip = 0;

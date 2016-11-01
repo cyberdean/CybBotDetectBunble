@@ -23,7 +23,7 @@ class StrikeEvent extends Event
     /**
      * @return Strike
      */
-    public function getStrike()  //todo remove and use read only methods
+    public function getStrike()
     {
         return $this->strike;
     }

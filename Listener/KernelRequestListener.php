@@ -20,7 +20,7 @@ class KernelRequestListener {
     }
 
     public function onKernelRequest(GetResponseEvent $event) {
-        $request   = $event->getRequest();
+        $request = $event->getRequest();
 
         if ($this->manager->check($request->getClientIp())) {
             $tpl = $this->twig->render('CybBotDetectBundle::userBanned.html.twig', array('ip' => $request->getClientIp()));
