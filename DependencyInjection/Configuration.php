@@ -27,8 +27,8 @@ class Configuration implements ConfigurationInterface
         //todo add configuation option for : strike UA or simply send 403 (no strike/ban) --> add field type ?
 
         $rootNode->addDefaultsIfNotSet()->children()
-            ->scalarNode('min_ban_interval')->defaultValue('P3D')->info('Minimum PHP DateInterval ban time')->end()
-            ->scalarNode('max_ban_interval')->defaultValue('P6M')->info('Maximum PHP DateInterval ban time')->end()
+            ->scalarNode('min_ban_interval')->defaultValue('P3D')->treatNullLike('P3D')->info('Minimum PHP DateInterval ban time')->end()
+            ->scalarNode('max_ban_interval')->defaultValue('P6M')->treatNullLike('P6M')->info('Maximum PHP DateInterval ban time')->end()
             ->integerNode('ip_banned_response_code')->defaultValue(403)->treatNullLike(403)->info('HTTP code when user ip is banned')->end()
 
             ->arrayNode('err404')->children()

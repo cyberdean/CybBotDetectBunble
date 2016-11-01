@@ -25,26 +25,42 @@ class BotDetectAddBaseDataCommand extends ContainerAwareCommand
         //}
 
         $em = $this->getContainer()->get('doctrine.orm.entity_manager');
+        $badUrlRepo = $em->getRepository('CybBotDetectBundle:Security\BadUrl');
+        $badUARepo = $em->getRepository('CybBotDetectBundle:Security\BadUserAgent');
 
+        $cptUrl = 0;
         $urlArray = $this->readFile('@CybBotDetectBundle/Resources/dictionnary/url.json');
         foreach ($urlArray as $u) {
-            $url = new BadUrl();
-            $url->setUrl($u);
-            $em->persist($url);
+            if (!$badUrlRepo->findOneBy(array('url' => $u))) {
+                $url = new BadUrl();
+                $url->setUrl($u);
+                $em->persist($url);
+                $cptUrl++;
+            }
         }
         $em->flush();
+        $output->writeln('Imported ' . $cptUrl . ' urls (' . (sizeof($urlArray) - $cptUrl) . ' skipped)');
 
         $strictMode = true;//todo option  //Add also web copiers, ...
         $uaCatArray = $this->readFile('@CybBotDetectBundle/Resources/dictionnary/ua.json');
+        $cptUa = 0;
+        $cptUaSkip = 0;
         foreach ($uaCatArray as $cat) {
             if ($strictMode || !$strictMode && !$cat['acceptable']) {
-                foreach ($cat['list'] as $u) {
-                    $ua = new BadUserAgent();
-                    $ua->setUa($u);
-                    $em->persist($ua);
+                foreach ($cat->list as $u) {
+                    if ($badUARepo->findOneBy(array('ua' => $u))) {
+                        $cptUaSkip++;
+                    }
+                    else {
+                        $ua = new BadUserAgent();
+                        $ua->setUa($u);
+                        $em->persist($ua);
+                        $cptUa++;
+                    }
                 }
             }
         }
+        $output->writeln('Imported ' . $cptUa . ' User-Agent (' . $cptUaSkip . ' skipped)');
 
         $em->flush();
         $output->writeln('Command Done.');

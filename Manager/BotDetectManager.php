@@ -42,7 +42,8 @@ class BotDetectManager {
      */
     public function isBot($userAgent) {
         $badUserAgentRepo = $this->em->getRepository('CybBotDetectBundle:Security\BadUserAgent');
-        foreach ($badUserAgentRepo->findAll() as $badUApattern) {
+        foreach ($badUserAgentRepo->findAll() as $badUA) {
+            $badUApattern = $badUA->getUa();
             $delimiter = '@';
             if (strpos($badUApattern, $delimiter) > -1) {
                 $delimiter = '#';
@@ -60,7 +61,7 @@ class BotDetectManager {
     }
 
     /**
-     * Check if an ip address can access or should be blocked
+     * Check if an ip address can access or should be blocked (= is banned)
      * @param $ip string User ip address
      * @return bool True is request should be blocked, false otherwise
      */
@@ -74,6 +75,17 @@ class BotDetectManager {
         if (substr($url, -1) == '/') { //remove leading slash
             $url = substr($url, 0, strlen($url)-1);
         }
+
+        //remove /app_dev.php
+        if (substr($url, 0, 12) == '/app_dev.php') { //remove leading slash
+            $url = substr($url, 12, strlen($url));
+        }
+
+        //remove /app.php
+        if (substr($url, 0, 8) == '/app.php') { //remove leading slash
+            $url = substr($url, 8, strlen($url));
+        }
+
         //strip params
         $url = strtok($url, '?');
         $url = strtok($url, '#');
@@ -88,7 +100,7 @@ class BotDetectManager {
         }
 
         $badUrlRepo = $this->em->getRepository('CybBotDetectBundle:Security\BadUrl');
-        return $badUrlRepo->findOneBy(array('url' => $url)) != null;
+        return array($badUrlRepo->findOneBy(array('url' => $url)) != null, $url);
     }
 
     /**
@@ -99,16 +111,18 @@ class BotDetectManager {
         $ip = $request->getClientIp();
         if ($this->check($ip)) return;  //todo use array  clientIps
 
-        $ua = $request->headers->get('User-Agent');
-        $res = $this->isBot($ua);
-        if ($res) {
-            $sk = new Strike();
-            $sk->setIp($ip)
-                ->setDate(new \DateTime())
-                ->setReason(ReasonEnum::UA)
-                ->setReasonDetails(json_encode(array('original' => $ua, 'match' => $res->getUa())));
-            $this->em->persist($sk);
-            $this->em->flush();
+        if ($this->config->isUaCheck()) {
+            $ua = $request->headers->get('User-Agent');
+            $res = $this->isBot($ua);
+            if ($res) {
+                $sk = new Strike();
+                $sk->setIp($ip)
+                    ->setDate(new \DateTime())
+                    ->setReason(ReasonEnum::UA)
+                    ->setReasonDetails(json_encode(array('original' => $ua, 'match' => $res->getUa())));
+                $this->em->persist($sk);
+                $this->em->flush();
+            }
         }
 
         $matchToExistingUrl = false;
@@ -123,7 +137,7 @@ class BotDetectManager {
         }
 
         //todo maybe a problem with dynamic routers ???  --> Second check on 4xx response ??
-        if ($matchToExistingUrl) {
+        if (!$matchToExistingUrl) {
             //check suspect url, if not match existing route
             $urlRes = $this->checkUrl($request);
             if ($urlRes[0]) {

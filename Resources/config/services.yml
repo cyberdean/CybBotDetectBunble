@@ -11,7 +11,7 @@ services:
 
  cyb_botdetect.security.listener.response:
         class: Cyberdean\Security\BotDetectBundle\Listener\KernelResponseListener
-        arguments: ['@doctrine.orm.entity_manager', '@cyb_botdetect.security.configmanager']
+        arguments: ['@doctrine.orm.entity_manager', '@cyb_botdetect.security.configmanager', '@cyb_botdetect.security.manager']
         tags:
             - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }
 
@@ -20,8 +20,8 @@ services:
         class: Cyberdean\Security\BotDetectBundle\Listener\EventsListener
         arguments: ['@event_dispatcher', '@logger']
         tags:
-            - { name: doctrine.event_listener, entity: CybBotDetectBundle\Entity\Security\Strike, event: prePersist }
-            - { name: doctrine.event_listener, entity: CybBotDetectBundle\Entity\Security\Ban, event: prePersist }
+            - { name: doctrine.orm.entity_listener, entity: CybBotDetectBundle\Entity\Security\Strike, event: prePersist }
+            - { name: doctrine.orm.entity_listener, entity: CybBotDetectBundle\Entity\Security\Ban, event: prePersist }
 
 # Managers
  cyb_botdetect.security.manager:

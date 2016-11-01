@@ -36,6 +36,11 @@ WIP - coming soon :)
 
 Simply run : `composer require cyberdean/botdetect-bundle`
 
+Optional, Import pre-configured Bad User-Agent / Url in database :
+`php bin/console bot-detect:import-basedata`
+
+If you don't run this command, don't forget to fill database yourself, otherwise UA & URL check are useless.
+
 ## Configuration
 config.yml - Default values
 ``` yml
@@ -60,6 +65,6 @@ cyb_bot_detect:
 
 ## License
 
-GNU General Public License v3 (GPL-3), see LICENSE.md
+GNU General Public License v3 (GPL-3), see LICENSE file.
 
 Simple explanation : https://tldrlegal.com/license/gnu-general-public-license-v3-(gpl-3)
