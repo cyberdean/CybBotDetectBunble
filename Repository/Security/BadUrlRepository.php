@@ -22,6 +22,6 @@ class BadUrlRepository extends EntityRepository
         $qb->where('REGEXP(:testUrl, b.url) = true')
             ->setMaxResults(1)
             ->setParameter('testUrl', $url);
-        $qb->getQuery()->getOneOrNullResult();
+        return $qb->getQuery()->getOneOrNullResult();
     }
 }

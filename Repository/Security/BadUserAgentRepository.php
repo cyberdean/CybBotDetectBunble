@@ -21,6 +21,6 @@ class BadUserAgentRepository extends \Doctrine\ORM\EntityRepository
         $qb->where('REGEXP(:testUa, b.ua) = true')
             ->setMaxResults(1)
             ->setParameter('testUa', $ua);
-        $qb->getQuery()->getOneOrNullResult();
+        return $qb->getQuery()->getOneOrNullResult();
     }
 }
