@@ -35,6 +35,7 @@ WIP - coming soon :)
 [Packagist](https://packagist.org/packages/cyberdean/botdetect-bundle)
 
 Simply run : `composer require cyberdean/botdetect-bundle`
+Beta : `composer require cyberdean/botdetect-bundle:@beta`
 
 Optional, Import pre-configured Bad User-Agent / Url in database :
 `php bin/console bot-detect:import-basedata`
