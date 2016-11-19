@@ -1,6 +1,7 @@
 <?php
 
 namespace Cyberdean\Security\BotDetectBundle\Repository\Security;
+use Cyberdean\Security\BotDetectBundle\Doctrine\RegExp;
 
 /**
  * BadUserAgentRepository
@@ -10,4 +11,16 @@ namespace Cyberdean\Security\BotDetectBundle\Repository\Security;
  */
 class BadUserAgentRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function matchUA($ua) {
+        $qb = $this->createQueryBuilder('b');
+
+        $qb->getEntityManager()->getConfiguration()->addCustomStringFunction('REGEXP', function () {
+            return new RegExp('REGEXP');
+        });
+
+        $qb->where('REGEXP(:testUa, b.ua) = true')
+            ->setMaxResults(1)
+            ->setParameter('testUa', $ua);
+        $qb->getQuery()->getOneOrNullResult();
+    }
 }

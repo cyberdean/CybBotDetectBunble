@@ -24,4 +24,5 @@ class BanRepository extends \Doctrine\ORM\EntityRepository
         return $q->getQuery()->getOneOrNullResult();
     }
 
+
 }

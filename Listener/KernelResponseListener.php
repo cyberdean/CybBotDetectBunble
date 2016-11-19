@@ -26,7 +26,7 @@ class KernelResponseListener {
         $response = $event->getResponse();
         $request = $event->getRequest();
 
-        if (!$this->manager->check($request->getClientIp())) { //todo use clientIps ??
+        if (!$request->getSession()->get('banned', false)) {
             if ($this->config->isErr404Check() && $response->getStatusCode() == 404) {
                 //todo check if this request has suspect URL strike ??? (If not one request can add multiple strike for differants reasons)
                 $sk = new Strike();
@@ -47,6 +47,6 @@ class KernelResponseListener {
                 $this->em->flush();
             }
         }
-
+        $request->getSession()->remove('banned');
     }
 }

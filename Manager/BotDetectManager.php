@@ -42,22 +42,7 @@ class BotDetectManager {
      */
     public function isBot($userAgent) {
         $badUserAgentRepo = $this->em->getRepository('CybBotDetectBundle:Security\BadUserAgent');
-        foreach ($badUserAgentRepo->findAll() as $badUA) {
-            $badUApattern = $badUA->getUa();
-            $delimiter = '@';
-            if (strpos($badUApattern, $delimiter) > -1) {
-                $delimiter = '#';
-            }
-
-            $res = preg_match($delimiter . $badUApattern . $delimiter . 'i', $userAgent);
-            if ($res === FALSE) {
-                $this->logger->error('Fail to try match regex : ' . var_export($badUApattern, true));
-            }
-            else if ($res == 1) {
-                return $badUApattern;
-            }
-        }
-        return false;
+        return $badUserAgentRepo->matchUA(trim(strtolower($userAgent))) != null;
     }
 
     /**
@@ -72,9 +57,6 @@ class BotDetectManager {
 
     public function checkUrl(Request $request) {
         $url = strtolower($request->getRequestUri());
-        if (substr($url, -1) == '/') { //remove leading slash
-            $url = substr($url, 0, strlen($url)-1);
-        }
 
         //remove /app_dev.php
         if (substr($url, 0, 12) == '/app_dev.php') { //remove leading slash
@@ -86,21 +68,8 @@ class BotDetectManager {
             $url = substr($url, 8, strlen($url));
         }
 
-        //strip params
-        $url = strtok($url, '?');
-        $url = strtok($url, '#');
-
-        //remove .php at end
-        $ext = array('.php' => 4, '.html' => 5);
-        foreach ($ext as $e => $length) {
-            if (substr($url, -$length) == $e) {
-                $url = substr($url, 0, strlen($url)-$length);
-                break;
-            }
-        }
-
         $badUrlRepo = $this->em->getRepository('CybBotDetectBundle:Security\BadUrl');
-        return array($badUrlRepo->findOneBy(array('url' => $url)) != null, $url);
+        return array($badUrlRepo->matchUrl($url) != null, $url);
     }
 
     /**
@@ -109,7 +78,6 @@ class BotDetectManager {
      */
     public function process(Request $request) {
         $ip = $request->getClientIp();
-        if ($this->check($ip)) return;  //todo use array  clientIps
 
         if ($this->config->isUaCheck()) {
             $ua = $request->headers->get('User-Agent');
@@ -160,6 +128,7 @@ class BotDetectManager {
                 ->setReason(null);
             $this->em->persist($ban);
             $this->em->flush();
+            $request->getSession()->set('banned', true);
         }
     }
 
@@ -212,13 +181,15 @@ class BotDetectManager {
      * @return bool True is has too many strike
      */
     public function isTooManyStrike($ip) {
-        $lastBan = $this->banRepo->findOneBy(array('ip' => $ip), array('startBan' => 'desc'));
-        if ($lastBan) {
+        $lastBan = $this->banRepo->findOneBy(array('ip' => $ip), array('endBan' => 'desc'));
+        $date = new \DateTime();
+        $di = new \DateInterval('P15D');//todo make configurable
+
+        if ($lastBan && $lastBan->getEndBan()->diff($date)->days < $di->days) {
             $date = $lastBan->getEndBan();
         }
         else {
-            $date = new \DateTime();
-            $date->sub(new \DateInterval('P1M')); //todo make configurable
+            $date->sub($di);
         }
 
         $strikesCountArray = $this->strikeRepo->getStrikesSince($ip, $date);
@@ -235,7 +206,7 @@ class BotDetectManager {
                     return $count > 1;
                     break;
                 case ReasonEnum::URL:
-                    return $count > 5;
+                    return $count > 10;
                     break;
                 default:
                 case ReasonEnum::CUSTOM:

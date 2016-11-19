@@ -7,13 +7,13 @@ services:
         class: Cyberdean\Security\BotDetectBundle\Listener\KernelRequestListener
         arguments: ['@cyb_botdetect.security.manager', '@templating', '@cyb_botdetect.security.configmanager']
         tags:
-            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 127 }
 
  cyb_botdetect.security.listener.response:
         class: Cyberdean\Security\BotDetectBundle\Listener\KernelResponseListener
         arguments: ['@doctrine.orm.entity_manager', '@cyb_botdetect.security.configmanager', '@cyb_botdetect.security.manager']
         tags:
-            - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }
+            - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse, priority: -1 }
 
 # Doctrine Listeners
  cyb_botdetect.security.listener.events:

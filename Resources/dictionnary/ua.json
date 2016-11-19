@@ -30,5 +30,12 @@
       "^EmailWolf.*",
       "^Harvest.*"
     ]
+  },
+  {
+    "type": "ipScanner",
+    "acceptable": false,
+    "list": [
+      "^.*zgrab/.*"
+    ]
   }
 ]
