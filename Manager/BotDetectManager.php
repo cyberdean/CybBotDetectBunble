@@ -11,6 +11,7 @@ use Symfony\Bridge\Monolog\Logger;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Exception\MethodNotAllowedException;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
@@ -88,32 +89,6 @@ class BotDetectManager {
                     ->setDate(new \DateTime())
                     ->setReason(ReasonEnum::UA)
                     ->setReasonDetails(json_encode(array('original' => $ua, 'match' => $res->getUa())));
-                $this->em->persist($sk);
-                $this->em->flush();
-            }
-        }
-
-        $matchToExistingUrl = false;
-        try {
-            $matcher = $this->router->getMatcher();
-            $matcher->match($request->getRequestUri());
-            $matchToExistingUrl = true;
-        }
-        catch (ResourceNotFoundException $e) {
-        }
-        catch (MethodNotAllowedException $e) {
-        }
-
-        //todo maybe a problem with dynamic routers ???  --> Second check on 4xx response ??
-        if (!$matchToExistingUrl) {
-            //check suspect url, if not match existing route
-            $urlRes = $this->checkUrl($request);
-            if ($urlRes[0]) {
-                $sk = new Strike();
-                $sk->setIp($ip)
-                    ->setDate(new \DateTime())
-                    ->setReason(ReasonEnum::URL)
-                    ->setReasonDetails($urlRes[1]);
                 $this->em->persist($sk);
                 $this->em->flush();
             }

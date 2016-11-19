@@ -21,10 +21,23 @@ class KernelResponseListener {
         $this->manager = $manager;
     }
 
-    public function onKernelResponse(FilterResponseEvent $event)
-    {
+    public function onKernelResponse(FilterResponseEvent $event) {
         $response = $event->getResponse();
         $request = $event->getRequest();
+
+        if ($response->getStatusCode() == 404) {
+            //check suspect url, if not match existing content
+            $urlRes = $this->manager->checkUrl($request);
+            if ($urlRes[0]) {
+                $sk = new Strike();
+                $sk->setIp($request->getClientIp())
+                    ->setDate(new \DateTime())
+                    ->setReason(ReasonEnum::URL)
+                    ->setReasonDetails($urlRes[1]);
+                $this->em->persist($sk);
+                $this->em->flush();
+            }
+        }
 
         if (!$request->getSession()->get('banned', false)) {
             if ($this->config->isErr404Check() && $response->getStatusCode() == 404) {
