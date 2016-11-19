@@ -37,6 +37,10 @@ WIP - coming soon :)
 Simply run : `composer require cyberdean/botdetect-bundle`
 Beta : `composer require cyberdean/botdetect-bundle:@beta`
 
+Add to AppKernel.php : `new Cyberdean\Security\BotDetectBundle\CybBotDetectBundle()`
+
+Don't forget to update your database : `php bin/console doctrine:schema:update --force`
+
 Optional, Import pre-configured Bad User-Agent / Url in database :
 `php bin/console bot-detect:import-basedata`
 
