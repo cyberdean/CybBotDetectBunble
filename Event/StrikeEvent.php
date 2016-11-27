@@ -6,6 +6,11 @@ namespace Cyberdean\Security\BotDetectBundle\Event;
 use Cyberdean\Security\BotDetectBundle\Entity\Security\Strike;
 use Symfony\Component\EventDispatcher\Event;
 
+/**
+ * Class StrikeEvent
+ * When ip get a strike this event is sended, in Symfony Event Dispatcher
+ * @package Cyberdean\Security\BotDetectBundle\Event
+ */
 class StrikeEvent extends Event
 {
     const NAME = 'cyb.botdetect.security.strike';

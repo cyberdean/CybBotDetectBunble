@@ -2,6 +2,7 @@
 
 namespace Cyberdean\Security\BotDetectBundle\Repository\Security;
 use Cyberdean\Security\BotDetectBundle\Doctrine\RegExp;
+use Cyberdean\Security\BotDetectBundle\Entity\Security\BadUrl;
 use Doctrine\ORM\EntityRepository;
 
 /**
@@ -12,6 +13,11 @@ use Doctrine\ORM\EntityRepository;
  */
 class BadUrlRepository extends EntityRepository
 {
+    /**
+     * Check if an url match regexp
+     * @param $url string Url to test
+     * @return null|BadUrl
+     */
     public function matchUrl($url) {
         $qb = $this->createQueryBuilder('b');
 

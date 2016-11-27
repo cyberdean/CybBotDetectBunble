@@ -12,7 +12,8 @@ use Cyberdean\Security\BotDetectBundle\Entity\Security\Ban;
 class BanRepository extends \Doctrine\ORM\EntityRepository
 {
     /**
-     * @param $ip
+     * Get current ban or null
+     * @param $ip string Related ip
      * @return Ban|null
      */
     public function getCurrentIpBan($ip) {

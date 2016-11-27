@@ -2,6 +2,7 @@
 
 namespace Cyberdean\Security\BotDetectBundle\Repository\Security;
 use Cyberdean\Security\BotDetectBundle\Doctrine\RegExp;
+use Cyberdean\Security\BotDetectBundle\Entity\Security\BadUserAgent;
 
 /**
  * BadUserAgentRepository
@@ -11,6 +12,11 @@ use Cyberdean\Security\BotDetectBundle\Doctrine\RegExp;
  */
 class BadUserAgentRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * Check if an UserAgent match regexp
+     * @param $ua string UserAgent to test
+     * @return null|BadUserAgent
+     */
     public function matchUA($ua) {
         $qb = $this->createQueryBuilder('b');
 

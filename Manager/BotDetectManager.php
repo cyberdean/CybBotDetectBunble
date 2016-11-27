@@ -11,9 +11,6 @@ use Symfony\Bridge\Monolog\Logger;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Exception\MethodNotAllowedException;
-use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
 class BotDetectManager {
     private $em;
@@ -39,11 +36,11 @@ class BotDetectManager {
     /**
      * Determine if bot or not
      * @param $userAgent string UserAgent to test
-     * @return false|\Cyberdean\Security\BotDetectBundle\Entity\Security\BadUserAgent
+     * @return null|\Cyberdean\Security\BotDetectBundle\Entity\Security\BadUserAgent
      */
     public function isBot($userAgent) {
         $badUserAgentRepo = $this->em->getRepository('CybBotDetectBundle:Security\BadUserAgent');
-        return $badUserAgentRepo->matchUA(trim(strtolower($userAgent))) != null;
+        return $badUserAgentRepo->matchUA(trim(strtolower($userAgent)));
     }
 
     /**
@@ -56,6 +53,11 @@ class BotDetectManager {
         return isset($ban);
     }
 
+    /**
+     * Check if request call suspect url
+     * @param Request $request
+     * @return array (match:boolean, url:string)
+     */
     public function checkUrl(Request $request) {
         $url = strtolower($request->getRequestUri());
 
